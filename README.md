@@ -10,11 +10,13 @@
 <br/><br/>
 <b>4.</b> Please set your artifact repository path inside maven-settings.xml, vi maven-settings.xml
 <br/><br/>
-<b>5.</b> oc create -n tekton-buildah-hello-demo cm maven-settings --from-file=settings.xml=/tekton-buildah-demo/maven-settings.xml
+<b>5.</b> Please update pvc as per your persistent storage setting
 <br/><br/>
-<b>6.</b> oc apply -f /tekton-buildah-demo
+<b>6.</b> oc create -n tekton-buildah-hello-demo cm maven-settings --from-file=settings.xml=/tekton-buildah-demo/maven-settings.xml
 <br/><br/>
-<b>7.</b> oc get route 
+<b>7.</b> oc apply -f /tekton-buildah-demo
+<br/><br/>
+<b>8.</b> oc get route 
 </br></br>
 
 <img width="1048" alt="pipeline" src="https://user-images.githubusercontent.com/42507151/141457638-fc0c91ce-3f3b-4921-979e-5f4674355f3b.png">
