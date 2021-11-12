@@ -1,0 +1,44 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: redeploy
+spec:
+  params:
+  - name: manifest-dir
+    description: The directory in source that contains yaml manifests
+    type: string
+    default: "template"
+  - name: DEPLOYMENT_NAME
+    type: string
+    default: springboot-hello-world
+  - name: DEPLOYMENT_IMAGE_NAME
+    type: string
+    default: image-registry.openshift-image-registry.svc:5000/hello-tekton-buildah-demo/springboot-hello-world:latest
+  steps:
+  - name: apply
+    image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+    workingdir: $(workspaces.source.path)
+    command: ["/bin/bash", "-c"]
+    args:
+    - |-
+      echo Applying manifests in $(params.manifest-dir) directory
+      oc apply -f $(params.manifest-dir)
+      echo -----------------------------------
+  - name: patch
+    image: image-registry.openshift-image-registry.svc:5000/openshift/cli:latest
+    command: ["/bin/bash", "-c"]
+    args:
+    - |-
+        oc patch deployment $(params.DEPLOYMENT_NAME) \
+           --patch='{
+                     "spec":{
+                             "template":{
+                                         "spec":{
+                                                 "containers":[{
+                                                                "name": "$(params.DEPLOYMENT_NAME)",
+                                                                "image":"$(params.DEPLOYMENT_IMAGE_NAME)"
+                                                               }]
+                                                }
+                                        }
+                            }
+                    }'

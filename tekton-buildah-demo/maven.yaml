@@ -1,0 +1,28 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: maven
+  namespace: tekton-buildah-hello-demo
+spec:
+  params:
+    - default:
+        - package
+      description: maven goals to run
+      name: GOALS
+      type: array
+  steps:
+    - args:
+        - '-Dmaven.repo.local=$(workspaces.maven-cache-repo.path)'
+        - '-s'
+        - $(workspaces.maven-settings.path)/settings.xml
+        - $(params.GOALS)
+      command:
+        - /usr/bin/mvn
+      image: gcr.io/cloud-builders/mvn
+      name: mvn
+      resources: {}
+      workingDir: $(workspaces.source.path)
+  workspaces:
+    - name: source
+    - name: maven-cache-repo
+    - name: maven-settings
