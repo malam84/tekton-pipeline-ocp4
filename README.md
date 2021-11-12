@@ -15,5 +15,8 @@
 <b>6.</b> oc apply -f /tekton-buildah-demo
 <br/><br/>
 <b>7.</b> oc get route 
+</br></br>
+
+<img width="1048" alt="pipeline" src="https://user-images.githubusercontent.com/42507151/141457638-fc0c91ce-3f3b-4921-979e-5f4674355f3b.png">
 
 
