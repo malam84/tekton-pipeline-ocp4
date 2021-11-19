@@ -1,0 +1,128 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: pipeline-buildah-demo
+spec:
+  params:
+    - default: springboot-hello-world
+      description: The application deployment name
+      name: APP_NAME
+      type: string
+    - name: quay-repo-id
+      type: string
+      default: ""
+    - name: quay-repo-name
+      type: string
+      default: ""
+    - name: quay-tag-image
+      type: string
+      default: "latest"
+    - default: 'https://github.com/malam84/springboot-hello-world.git'
+      description: The application git repository url
+      name: GIT_URL
+      type: string
+    - default: master
+      description: The application git repository revision
+      name: GIT_REVISION
+      type: string
+    - name: manifest-dir
+      type: string
+  tasks:
+    - name: git-clone
+      params:
+        - name: url
+          value: $(params.GIT_URL)
+        - name: revision
+          value: $(params.GIT_REVISION)
+        - name: deleteExisting
+          value: 'true'
+      taskRef:
+        kind: ClusterTask
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: maven-source
+    - name: mvn-package
+      params:
+        - name: GOALS
+          value:
+            - package
+            - '-DskipTests'
+      runAfter:
+        - git-clone
+      taskRef:
+        kind: Task
+        name: maven
+      workspaces:
+        - name: maven-cache-repo
+          workspace: maven-cache-repo
+        - name: maven-settings
+          workspace: maven-settings
+        - name: source
+          workspace: maven-source
+    - name: mvn-test
+      params:
+        - name: GOALS
+          value:
+            - verify
+      runAfter:
+        - mvn-package
+      taskRef:
+        kind: Task
+        name: maven
+      workspaces:
+        - name: maven-cache-repo
+          workspace: maven-cache-repo
+        - name: maven-settings
+          workspace: maven-settings
+        - name: source
+          workspace: maven-source
+    - name: sonarqube
+      runAfter:
+        - mvn-package
+      taskRef:
+        kind: Task
+        name: sonarqube-scanner
+      workspaces:
+        - name: source-dir
+          workspace: maven-source
+        - name: sonar-settings
+          workspace: sonar-settings
+    - name: build-image
+      params:
+      - name: repo-id
+        value: $(params.quay-repo-id)
+      - name: repo-name
+        value: $(params.quay-repo-name)
+      - name: tag-image
+        value: $(params.quay-tag-image)
+      - name: TLSVERIFY
+        value: "false"
+      runAfter:
+        - mvn-test
+        - sonarqube
+      taskRef:
+        kind: Task
+        name: buildah
+      workspaces:
+        - name: source
+          workspace: maven-source
+    - name: deploy
+      taskRef:
+        name: redeploy
+        kind: Task
+      runAfter:
+      - build-image
+      params:
+      - name: DEPLOYMENT_NAME
+        value: $(params.APP_NAME)
+      - name: DEPLOYMENT_IMAGE_NAME
+        value: quay.io/$(params.quay-repo-id)/$(params.quay-repo-name):$(params.quay-tag-image)
+      workspaces:
+      - name: source
+        workspace: maven-source
+  workspaces:
+    - name: maven-source
+    - name: maven-settings
+    - name: maven-cache-repo
+    - name: sonar-settings
