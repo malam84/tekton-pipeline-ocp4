@@ -22,13 +22,15 @@ I am creating a tekton pipeline to build docker image of springboot application 
  &nbsp; &nbsp;   --docker-password=yourpassword \ <br>
  &nbsp; &nbsp;   --docker-email=youremail
 <br/><br/>
-<b>7.</b> Modify pvc as per your cluster storage setting
+<b>7.</b> Modify pvc as per your cluster storage setting <br/>
 <b>8.</b> oc apply -f  <br/>
 <b>9.</b> oc get route  <br> &nbsp; &nbsp; http://springboot-hello-world-domain.xxx.com/hello <br/>
 </br></br>
 <img width="905" alt="pipeline" src="https://user-images.githubusercontent.com/42507151/142662058-dd140269-44a3-4b7e-a6c0-e252ee440688.png">
 
 <img width="1084" alt="sonarqube" src="https://user-images.githubusercontent.com/42507151/142661981-a38f8dae-862c-4734-9ca1-bef1d7ac8299.png">
+
+<img width="1430" alt="quay" src="https://user-images.githubusercontent.com/42507151/142662480-81fa0917-34f9-4046-938f-b7736929690e.png">
 
 
 
