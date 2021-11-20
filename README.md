@@ -57,3 +57,6 @@ I am creating a tekton pipeline to build docker image of springboot application 
 <b>7.</b> Modify pvc.yaml as per your cluster storage setting <br/><br/>
 <b>8.</b> oc apply -f .  <br/><br/>
 <b>9.</b> Please restart pipelinerun if fail <br/>
+<img width="967" alt="pipeline1" src="https://user-images.githubusercontent.com/42507151/142724044-802f1444-90fd-4d40-a4ab-182aa15fa337.png">
+<img width="1440" alt="quay1" src="https://user-images.githubusercontent.com/42507151/142724036-2eabaa70-267b-4696-ac0d-38faa2cead1f.png">
+
