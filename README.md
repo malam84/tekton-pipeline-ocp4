@@ -4,9 +4,9 @@
 <br/>
 I am creating a tekton pipeline to build docker image of springboot application and deploy on openshift. Please see code repository https://github.com/malam84/springboot-hello-world.git. Please execute below step to run code on your workspace
 <br/><br/>
-<b>1.</b> git clone git@github.com:malam84/tekton-pipeline-ocp4-demo.git 
+<b>1.</b> git clone git@github.com:malam84/tekton-pipeline-ocp4.git 
 <br/><br/>
-<b>2.</b> cd tekton-pipeline-ocp4-demo/docker-build
+<b>2.</b> cd tekton-pipeline-ocp4/docker-build
 <br/><br/>
 <b>3.</b> $ oc new-project project-name
 <br/><br/>
@@ -38,9 +38,9 @@ I am creating a tekton pipeline to build docker image of springboot application 
 ## S2I build
 
 ### I am using springboot application https://github.com/malam84/springboot-hello-world2 for s2i build <br/>
-<b>1.</b> git clone git@github.com:malam84/tekton-pipeline-ocp4-demo.git 
+<b>1.</b> git clone git@github.com:malam84/tekton-pipeline-ocp4.git 
 <br/><br/>
-<b>2.</b> cd tekton-pipeline-ocp4-demo/s2i-build
+<b>2.</b> cd tekton-pipeline-ocp4/s2i-build
 <br/><br/>
 <b>3.</b> $ oc new-project project-name
 <br/><br/>
