@@ -3,7 +3,7 @@
 ## Docker build
 <br/>
 I am creating a tekton pipeline to build docker image of springboot application and deploy on openshift. Please see code repository https://github.com/malam84/springboot-hello-world.git. Please execute below step to run code on your workspace
-
+<br/><br/>
 <b>1.</b> git clone git@github.com:malam84/tekton-pipeline-ocp4-demo.git 
 <br/><br/>
 <b>2.</b> cd tekton-pipeline-ocp4-demo/docker-build
@@ -22,7 +22,7 @@ I am creating a tekton pipeline to build docker image of springboot application 
  &nbsp; &nbsp;   --docker-password=yourpassword \ <br>
  &nbsp; &nbsp;   --docker-email=youremail
 <br/><br/>
-<b>7.</b> Modify pvc as per your cluster storage setting <br/>
+<b>7.</b> Modify pvc.yaml as per your cluster storage setting <br/>
 <b>8.</b> oc apply -f . <br/>
 <b>9.</b> oc apply -f /triggers <br/>
 <b>10.</b> oc get route  <br> 
