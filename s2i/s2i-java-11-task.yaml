@@ -1,0 +1,123 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: s2i-java-11
+spec:
+  description: >-
+    s2i-java task clones a Git repository and builds and pushes a container
+    image using S2I and a Java builder image.
+  params:
+    - default: openjdk-11-ubi8
+      description: The tag of java imagestream for java version
+      name: VERSION
+      type: string
+    - default: .
+      description: The location of the path to run s2i from
+      name: PATH_CONTEXT
+      type: string
+    - default: 'true'
+      description: >-
+        Verify the TLS on the registry endpoint (for push/pull to a non-TLS
+        registry)
+      name: TLSVERIFY
+      type: string
+    - default: ''
+      description: Additional Maven arguments
+      name: MAVEN_ARGS_APPEND
+      type: string
+    - default: 'false'
+      description: Remove the Maven repository after the artifact is built
+      name: MAVEN_CLEAR_REPO
+      type: string
+    - default: ''
+      description: The base URL of a mirror used for retrieving artifacts
+      name: MAVEN_MIRROR_URL
+      type: string
+    - default: >-
+        registry.redhat.io/rhel8/buildah@sha256:99cae35f40c7ec050fed3765b2b27e0b8bbea2aa2da7c16408e2ca13c60ff8ee
+      description: The location of the buildah builder image.
+      name: BUILDER_IMAGE
+      type: string
+  resources:
+    outputs:
+      - name: image
+        type: image
+  steps:
+    - args:
+        - |-
+          echo "MAVEN_CLEAR_REPO=$(params.MAVEN_CLEAR_REPO)" > env-file
+
+          [[ '$(params.MAVEN_ARGS_APPEND)' != "" ]] &&
+            echo "MAVEN_ARGS_APPEND=$(params.MAVEN_ARGS_APPEND)" >> env-file
+
+          [[ '$(params.MAVEN_MIRROR_URL)' != "" ]] &&
+            echo "MAVEN_MIRROR_URL=$(params.MAVEN_MIRROR_URL)" >> env-file
+
+          echo "Generated Env file"
+          echo "------------------------------"
+          cat env-file
+          echo "------------------------------"
+      command:
+        - /bin/sh
+        - '-c'
+      image: >-
+        registry.redhat.io/ocp-tools-4-tech-preview/source-to-image-rhel8@sha256:637c15600359cb45bc01445b5e811b6240ca239f0ebfe406b50146e34f68f631
+      name: gen-env-file
+      resources: {}
+      volumeMounts:
+        - mountPath: /env-params
+          name: envparams
+      workingDir: /env-params
+    - command:
+        - s2i
+        - build
+        - $(params.PATH_CONTEXT)
+        - >-
+          image-registry.openshift-image-registry.svc:5000/openshift/java:$(params.VERSION)
+        - '--image-scripts-url'
+        - 'image:///usr/local/s2i'
+        - '--as-dockerfile'
+        - /gen-source/Dockerfile.gen
+        - '--environment-file'
+        - /env-params/env-file
+      image: >-
+        registry.redhat.io/ocp-tools-4-tech-preview/source-to-image-rhel8@sha256:637c15600359cb45bc01445b5e811b6240ca239f0ebfe406b50146e34f68f631
+      name: generate
+      resources: {}
+      volumeMounts:
+        - mountPath: /gen-source
+          name: gen-source
+        - mountPath: /env-params
+          name: envparams
+      workingDir: $(workspaces.source.path)
+    - command:
+        - buildah
+        - bud
+        - '--storage-driver=vfs'
+        - '--tls-verify=$(params.TLSVERIFY)'
+        - '--layers'
+        - '-f'
+        - /gen-source/Dockerfile.gen
+        - '-t'
+        - $(resources.outputs.image.url)
+        - .
+      image: $(params.BUILDER_IMAGE)
+      name: build
+      resources: {}
+      volumeMounts:
+        - mountPath: /var/lib/containers
+          name: pipeline-cache
+        - mountPath: /gen-source
+          name: gen-source
+      workingDir: /gen-source
+  volumes:
+    - emptyDir: {}
+      name: gen-source
+    - emptyDir: {}
+      name: envparams
+    - name: pipeline-cache
+      persistentVolumeClaim:
+        claimName: pipeline-task-cache-pvc
+  workspaces:
+    - mountPath: /workspace/source
+      name: source

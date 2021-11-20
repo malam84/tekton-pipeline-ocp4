@@ -1,0 +1,58 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: push-image-to-quay
+spec:
+  params:
+    - default: ''
+      description: >-
+        The quay.io account that matches the credentials stored in the mounted
+        secret.
+    - default: >-
+        registry.redhat.io/rhel8/buildah@sha256:99cae35f40c7ec050fed3765b2b27e0b8bbea2aa2da7c16408e2ca13c60ff8ee
+      description: The location of the buildah builder image.
+      name: BUILDER_IMAGE
+      type: string
+  resources:
+    inputs:
+      - name: image
+        type: image
+  steps:
+    - command:
+        - buildah
+        - tag
+        - '--storage-driver=vfs'
+        - $(resources.inputs.image.url)
+        - $(resources.inputs.image.url)
+      image: $(params.BUILDER_IMAGE)
+      name: buildah-tag-image
+      resources: {}
+      volumeMounts:
+        - mountPath: /var/lib/containers
+          name: pipeline-cache
+    - command:
+        - buildah
+        - push
+        - '--storage-driver=vfs'
+        - '--authfile'
+        - /etc/secret-volume/config.json
+        - $(resources.inputs.image.url)
+      image: $(params.BUILDER_IMAGE)
+      name: push-image-to-quay
+      resources: {}
+      volumeMounts:
+        - mountPath: /etc/secret-volume
+          name: quay-auth-secret
+          readOnly: true
+        - mountPath: /var/lib/containers
+          name: pipeline-cache
+  volumes:
+    - name: quay-auth-secret
+      secret:
+        items:
+          - key: .dockerconfigjson
+            path: config.json
+        secretName: dockerconfigjson
+    - name: pipeline-cache
+      persistentVolumeClaim:
+        claimName: pipeline-task-cache-pvc

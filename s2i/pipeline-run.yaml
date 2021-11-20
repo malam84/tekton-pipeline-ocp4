@@ -1,0 +1,33 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: pipeline-run-s2i-demo
+spec:
+  pipelineRef:
+    name: pipeline-s2i-demo
+  params:
+  - name: APP_NAME
+    value: springboot-hello-world2
+  - name: GIT_URL
+    value: https://github.com/malam84/springboot-hello-world2.git
+  - name: GIT_REVISION
+    value: master
+  - name: manifest-dir
+    value: template
+  resources:
+    - name: image
+      resourceRef:
+        name: image-url
+  workspaces:
+  - name: maven-source
+    persistentVolumeClaim:
+      claimName: maven-source-pvc
+  - name: maven-cache-repo
+    persistentVolumeClaim:
+      claimName: maven-cache-repo-pvc
+  - name: maven-settings
+    configMap:
+      name: maven-settings
+  - name: sonar-settings
+    configMap:
+      name: sonar-properties
