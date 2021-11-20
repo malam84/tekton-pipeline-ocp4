@@ -24,7 +24,7 @@ I am creating a tekton pipeline to build docker image of springboot application 
 <br/><br/>
 <b>7.</b> Modify pvc.yaml as per your cluster storage setting <br/>
 <b>8.</b> oc apply -f . <br/>
-<b>9.</b> oc apply -f /triggers <br/>
+<b>9.</b> oc apply -f ./triggers <br/>
 <b>10.</b> oc get route  <br> 
 <b>11.</b> Modify trigger.sh before run <br> 
 </br></br>
