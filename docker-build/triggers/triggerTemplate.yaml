@@ -1,0 +1,45 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: hello-trigger-pipeline-template
+spec:
+  params:
+  - name: GIT_REVISION
+    description: The Git commit revision
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1beta1
+    kind: PipelineRun
+    metadata:
+      generateName: hello-app-pipeline-run-
+    spec:
+      serviceAccountName: pipeline
+      pipelineRef:
+        name: pipeline-buildah-demo
+      params:
+      - name: APP_NAME
+        value: springboot-hello-world
+      - name: GIT_URL
+        value: https://github.com/malam84/springboot-hello-world.git
+      - name: GIT_REVISION
+        value: $(tt.params.GIT_REVISION)
+      - name: manifest-dir
+        value: template
+      - name: quay-repo-id
+        value: "malam"
+      - name: quay-repo-name
+        value: "springboot-hello-world"
+      - name: quay-tag-image
+        value: "latest"
+      workspaces:
+      - name: maven-source
+        persistentVolumeClaim:
+          claimName: maven-source-pvc
+      - name: maven-cache-repo
+        persistentVolumeClaim:
+          claimName: maven-cache-repo-pvc
+      - name: maven-settings
+        configMap:
+          name: maven-settings
+      - name: sonar-settings
+        configMap:
+          name: sonar-properties

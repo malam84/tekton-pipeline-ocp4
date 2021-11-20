@@ -1,0 +1,9 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: hello-pipeline-binding
+spec:
+  params:
+  params:
+  - name: GIT_REVISION
+    value: $(body.head_commit.name)
