@@ -28,6 +28,7 @@ I am creating a tekton pipeline to build docker image of springboot application 
 <b>10.</b> oc get route  <br> 
 <b>11.</b> Modify trigger.sh before run <br> 
 </br></br>
+<img width="838" alt="trigger" src="https://user-images.githubusercontent.com/42507151/142744759-b1fea52f-280e-49c0-b44f-0fe49adaac39.png">
 <img width="905" alt="pipeline" src="https://user-images.githubusercontent.com/42507151/142662058-dd140269-44a3-4b7e-a6c0-e252ee440688.png">
 
 <img width="1084" alt="sonarqube" src="https://user-images.githubusercontent.com/42507151/142661981-a38f8dae-862c-4734-9ca1-bef1d7ac8299.png">
