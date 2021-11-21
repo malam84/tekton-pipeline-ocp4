@@ -2,7 +2,7 @@
 
 ## Docker build
 <br/>
-I am creating a tekton pipeline to build docker image of springboot application and deploy on openshift. Please see code repository https://github.com/malam84/springboot-hello-world.git. Please execute below step to run code on your workspace
+I have created a tekton pipeline to build docker image of springboot application and deploy on openshift. Please see code repository https://github.com/malam84/springboot-hello-world.git. Please execute below step to run code on your workspace
 <br/><br/>
 <b>1.</b> git clone git@github.com:malam84/tekton-pipeline-ocp4.git 
 <br/><br/>
