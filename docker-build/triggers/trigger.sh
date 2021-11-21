@@ -1,5 +1,7 @@
-  curl -v \
-  -H 'X-GitHub-Event: push' \
-  -H 'Content-Type: application/json' \
-  -d '{"ref":"refs/heads/main","head_commit":{"name":"master"}}' \
- 	http://hello-github-listener-el-hello-world.apps-crc.testing
+curl -i \
+    -H 'X-GitHub-Event: pull_request' \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "pull_request": {"head": {"sha": "master"}}
+    }' \
+    http://el-hello-hello-world.apps-crc.testing

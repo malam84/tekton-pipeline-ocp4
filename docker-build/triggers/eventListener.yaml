@@ -3,17 +3,11 @@
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
 metadata:
-  name: hello-github-listener-interceptor
+  name: hello-el
 spec:
   serviceAccountName: pipeline
   triggers:
   - name: github-listener
-    interceptors:
-    - github:
-        eventTypes:
-        - push
-    - cel:
-        filter: "body.ref == 'refs/heads/main'"
     bindings:
       - ref: hello-pipeline-binding
     template:
