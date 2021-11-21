@@ -1,4 +1,4 @@
-# tekton-pipeline-ocp4-demo
+# tekton-pipeline-ocp4
 
 ## Docker build
 <br/>
